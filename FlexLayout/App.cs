@@ -6,7 +6,8 @@ namespace FlexLayout
 	{
 		public App()
 		{
-			MainPage = new SamplePage();
+			//MainPage = new RandomBoxes();
+			MainPage = new TestPage5();
 		}
 
 		protected override void OnStart()

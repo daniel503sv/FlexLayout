@@ -5,6 +5,10 @@ namespace FlexLayout
 {
 	public interface IFlexItem//<T> : View where T : View
 	{
+		
+
+
+		//original interface
 		/*public View View;
 		public Rectangle Region;
 		public double X

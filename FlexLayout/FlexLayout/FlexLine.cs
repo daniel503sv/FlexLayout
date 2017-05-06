@@ -9,9 +9,12 @@ namespace FlexLayout
 	{
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
+			System.Diagnostics.Debug.WriteLine ("FlexLine recived y: " + y);
 			double crossSize = 0;
+			double insideY = this.Bounds.Location.Y;
+			System.Diagnostics.Debug.WriteLine("Inside bound in Y: " + insideY);
 			crossSize = DependingFlexOrientation(CrossSize(width), CrossSize(height));
-
+			y = insideY;
 			foreach (var child in Children)
 			{
 				if (!child.IsVisible)
@@ -20,9 +23,9 @@ namespace FlexLayout
 				SizeRequest childSizeRequest = child.GetSizeRequest(double.PositiveInfinity, height);
 				double childWidth = childSizeRequest.Request.Width;
 				double childHeight = childSizeRequest.Request.Height;
-				LayoutChildIntoBoundingRegion(child, AlignItemsSwitch(crossSize, x, y, childWidth, childHeight));
-
-				DependingFlexOrientation(() => { x += (childWidth + Spacing); }, () => { y += (childHeight + Spacing); });
+				System.Diagnostics.Debug.WriteLine ("Rectangle (" + x + ","+y+")");
+				LayoutChildIntoBoundingRegion(child, AlignItemsSwitch(crossSize, x, this.Bounds.Y, childWidth, childHeight));
+				DependingFlexOrientation(() => { x += (childWidth + Spacing); }, () => { insideY += (childHeight + Spacing); });
 			}
 		}
 
@@ -30,17 +33,18 @@ namespace FlexLayout
 
 		private Rectangle AlignItemsSwitch(double crossSize, double x, double y, double childWidth, double childHeight)
 		{
-			var defaultRectangle = new Rectangle(x, y, childWidth, childHeight);
+			System.Diagnostics.Debug.WriteLine ("rectangle y: " + y);
+			var defaultRectangle = new Rectangle(x, this.Bounds.Y, childWidth, childHeight);
 			switch (AlignItems)
 			{
 				case FlexAlignItems.Start:
 					return defaultRectangle;
 				case FlexAlignItems.End:
-					return AlignEnd(crossSize, x, y, childWidth, childHeight);
+					return AlignEnd(crossSize, x, this.Bounds.Y, childWidth, childHeight);
 				case FlexAlignItems.Center:
-					return AlignCenter(crossSize, x, y, childWidth, childHeight);
+					return AlignCenter(crossSize, x, this.Bounds.Y, childWidth, childHeight);
 				case FlexAlignItems.Strech:
-					return AlignStrech(crossSize, x, y, childWidth, childHeight);
+					return AlignStrech(crossSize, x, this.Bounds.Y, childWidth, childHeight);
 				case FlexAlignItems.Baseline:
 					return defaultRectangle;
 				default:
@@ -52,22 +56,22 @@ namespace FlexLayout
 		{
 			double spare = CalcSpare(crossSize, childWidth, childHeight);
 
-			return DependingFlexOrientation(new Rectangle(x, y + spare, childWidth, childHeight),
-											new Rectangle(x + spare, y, childWidth, childHeight));
+			return DependingFlexOrientation(new Rectangle(x, this.Bounds.Y + spare, childWidth, childHeight),
+											new Rectangle(x + spare, this.Bounds.Y, childWidth, childHeight));
 		}
 
 		private Rectangle AlignCenter(double crossSize, double x, double y, double childWidth, double childHeight)
 		{
 			double spare = CalcSpare(crossSize, childWidth, childHeight) / 2;
 
-			return DependingFlexOrientation(new Rectangle(x, y + spare, childWidth, childHeight),
-											new Rectangle(x + spare, y, childWidth, childHeight));
+			return DependingFlexOrientation(new Rectangle(x, this.Bounds.Y + spare, childWidth, childHeight),
+											new Rectangle(x + spare, this.Bounds.Y, childWidth, childHeight));
 		}
 
 		private Rectangle AlignStrech(double crossSize, double x, double y, double childWidth, double childHeight)
 		{
-			return DependingFlexOrientation(new Rectangle(x, y, childWidth, crossSize),
-											new Rectangle(x, y, crossSize, childHeight));
+			return DependingFlexOrientation(new Rectangle(x, this.Bounds.Y, childWidth, crossSize),
+											new Rectangle(x, this.Bounds.Y, crossSize, childHeight));
 		}
 		#endregion
 	}
